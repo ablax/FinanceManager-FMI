@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "143408914394",
+    "project_id": "financemanager-d91b4",
+    "storage_bucket": "financemanager-d91b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143408914394:android:bc269cf9902243b09eaae3",
+        "android_client_info": {
+          "package_name": "me.ablax.financemanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143408914394-odvkko368re5f7dlfep7dfdsoo2cihpm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjrVpCTtoh3ywRe3AL15Kh6iVkEG4R9gU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143408914394-odvkko368re5f7dlfep7dfdsoo2cihpm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
