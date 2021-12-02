@@ -67,8 +67,22 @@ public class TransactionsDb extends SQLiteOpenHelper {
     }
 
 
+    public Transaction getTransaction(final Integer transactionId) {
+        Transaction transaction = null;
+        final SQLiteDatabase db = this.getReadableDatabase();
+        try (Cursor cursor = db.rawQuery("SELECT `name`, `amount` FROM `payments` where `id` = ?", Collections.singletonList(transactionId.toString()).toArray(new String[0]))) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToNext();
+                final String name = cursor.getString(0);
+                final Double amount = cursor.getDouble(1);
+                transaction = new Transaction(transactionId, name, amount);
+
+            }
+        }
+        return transaction;
+    }
+
     private void createDb(final SQLiteDatabase db) {
         db.compileStatement("CREATE TABLE IF NOT EXISTS `payments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(20), `amount` REAL )").execute();
     }
-
 }

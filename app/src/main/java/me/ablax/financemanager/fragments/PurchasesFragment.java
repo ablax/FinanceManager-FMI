@@ -25,11 +25,14 @@ import java.util.function.Supplier;
 import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.PurchasesFragmentBinding;
 import me.ablax.financemanager.db.PurchasesDb;
+import me.ablax.financemanager.db.TransactionsDb;
 import me.ablax.financemanager.dto.PurchaseDto;
+import me.ablax.financemanager.dto.Transaction;
 
 public class PurchasesFragment extends Fragment {
 
     private PurchasesFragmentBinding binding;
+    private TransactionsDb transactionsDb;
     private PurchasesDb purchasesDb;
     private int transactionId;
 
@@ -47,8 +50,8 @@ public class PurchasesFragment extends Fragment {
                              final Bundle savedInstanceState) {
 
         final Context context = this.getContext();
+        this.transactionsDb = new TransactionsDb(context);
         this.purchasesDb = new PurchasesDb(context);
-        this.transactionId = getArguments().getInt("transactionId");
 
         this.binding = PurchasesFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -58,8 +61,9 @@ public class PurchasesFragment extends Fragment {
     public void onViewCreated(@NonNull final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        this.binding.greetText.setText(binding.greetText.getText().toString().replace("%s", transactionId + ""));
+        this.transactionId = getArguments().getInt("transactionId");
+        final Transaction transaction = this.transactionsDb.getTransaction(transactionId);
+        this.binding.greetText.setText(binding.greetText.getText().toString().replace("%s", transaction.getName()));
         this.binding.addProduct.setOnClickListener(v -> {
             final Integer amount = Integer.parseInt(binding.quantity.getText().toString());
             final String transactionName = binding.productName.getText().toString();
