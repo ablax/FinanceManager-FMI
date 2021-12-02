@@ -1,6 +1,7 @@
 package me.ablax.financemanager.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,17 +25,22 @@ import java.util.function.Supplier;
 import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.FragmentSecondBinding;
 import me.ablax.financemanager.db.SQLiteDB;
+import me.ablax.financemanager.db.UsersDb;
 import me.ablax.financemanager.dto.Transaction;
 
 public class ManagerFragment extends Fragment {
 
     private FragmentSecondBinding binding;
-    private SQLiteDB db;
+    private SQLiteDB transactionsDb;
+    private UsersDb usersDb;
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        this.db = new SQLiteDB(this.getContext());
+
+        final Context context = this.getContext();
+        this.transactionsDb = new SQLiteDB(context);
+        this.usersDb = new UsersDb(context);
 
         this.binding = FragmentSecondBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -45,12 +51,12 @@ public class ManagerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        this.binding.greetText.setText(binding.greetText.getText().toString().replace("%s", db.getUserName()));
+        this.binding.greetText.setText(binding.greetText.getText().toString().replace("%s", this.usersDb.getUserName()));
         this.binding.addTransaction.setOnClickListener(v -> {
             final double amount = Double.parseDouble(binding.price.getText().toString());
             final String transactionName = binding.transName.getText().toString();
 
-            db.addTransaction(new Transaction(transactionName, amount));
+            transactionsDb.addTransaction(new Transaction(transactionName, amount));
             Snackbar.make(view, "Successfully added transaction", Snackbar.LENGTH_LONG).setAction("Transaction", null).show();
             binding.price.setText("");
             binding.transName.setText("");
@@ -61,7 +67,7 @@ public class ManagerFragment extends Fragment {
             Snackbar
                     .make(view, "Confirm delete all?", Snackbar.LENGTH_LONG)
                     .setAction("YES", event -> {
-                        db.deleteAllTransactions();
+                        transactionsDb.deleteAllTransactions();
                         refetchTransactions();
                         Snackbar.make(view, "All transactions successfully deleted!.", Snackbar.LENGTH_SHORT).show();
                     }).show();
@@ -70,7 +76,7 @@ public class ManagerFragment extends Fragment {
     }
 
     private void refetchTransactions() {
-        final List<Transaction> transactions = db.getTransactions();
+        final List<Transaction> transactions = transactionsDb.getTransactions();
         final TableLayout tableLayout = binding.tableLayout;
         tableLayout.removeAllViews();
         double totalAmount = 0;
@@ -103,7 +109,7 @@ public class ManagerFragment extends Fragment {
         totalAmountView.setId(id1);
 
         totalTrans.setText(R.string.total_spent_amount);
-        totalAmountView.setText(totalAmount + "");
+        totalAmountView.setText(Double.valueOf(totalAmount).toString());
 
         totalTrans.setPadding(2, 0, 15, 0);
         totalTrans.setTextColor(Color.BLACK);
@@ -123,7 +129,7 @@ public class ManagerFragment extends Fragment {
         final Button deleteTransaction = new Button(getContext());
         deleteTransaction.setText(R.string.delete_btn);
         deleteTransaction.setOnClickListener(v -> {
-            this.db.deleteTransaction(id);
+            this.transactionsDb.deleteTransaction(id);
             refetchTransactions();
         });
         deleteTransaction.setPadding(2, 0, 15, 0);

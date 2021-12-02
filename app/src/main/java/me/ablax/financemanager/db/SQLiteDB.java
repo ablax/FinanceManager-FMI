@@ -24,37 +24,14 @@ public class SQLiteDB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(final SQLiteDatabase db) {
-        db.beginTransaction();
         this.createDb(db);
-        db.endTransaction();
     }
 
     @Override
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
-        db.beginTransaction();
         db.execSQL("DROP TABLE IF EXISTS `payments`");
         this.createDb(db);
         db.endTransaction();
-    }
-
-    public void createUser(final String name) {
-        final SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("INSERT INTO `users` (`name`) VALUES (?)", Collections.singletonList(name).toArray(new String[0]));
-    }
-
-    public boolean hasUser() {
-        final SQLiteDatabase db = this.getReadableDatabase();
-        try (Cursor cursor = db.rawQuery("SELECT * FROM `users`", new String[0])) {
-            return cursor.getCount() > 0;
-        }
-    }
-
-    public String getUserName() {
-        final SQLiteDatabase db = this.getReadableDatabase();
-        try (Cursor cursor = db.rawQuery("SELECT `name` FROM `users`", new String[0])) {
-            cursor.moveToNext();
-            return cursor.getString(0);
-        }
     }
 
     public void addTransaction(final Transaction transaction) {
@@ -92,7 +69,6 @@ public class SQLiteDB extends SQLiteOpenHelper {
 
     private void createDb(final SQLiteDatabase db) {
         db.compileStatement("CREATE TABLE IF NOT EXISTS `payments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(20), `amount` REAL )").execute();
-        db.compileStatement("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(20))").execute();
     }
 
 }

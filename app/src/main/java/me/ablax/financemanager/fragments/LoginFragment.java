@@ -12,18 +12,19 @@ import androidx.navigation.fragment.NavHostFragment;
 import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.FragmentFirstBinding;
 import me.ablax.financemanager.db.SQLiteDB;
+import me.ablax.financemanager.db.UsersDb;
 
 public class LoginFragment extends Fragment {
 
     private FragmentFirstBinding binding;
-    private SQLiteDB db;
+    private UsersDb usersDb;
 
     @Override
     public View onCreateView(
             final LayoutInflater inflater, final ViewGroup container,
             final Bundle savedInstanceState
     ) {
-        this.db = new SQLiteDB(this.getContext());
+        this.usersDb = new UsersDb(this.getContext());
 
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -34,7 +35,7 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.signInBtn.setOnClickListener(v -> {
-            this.db.createUser(binding.nameInputField.getText().toString());
+            this.usersDb.createUser(binding.nameInputField.getText().toString());
             NavHostFragment.findNavController(this).navigate(R.id.action_FirstFragment_to_SecondFragment);
         });
     }
