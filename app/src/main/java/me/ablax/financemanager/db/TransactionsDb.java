@@ -16,7 +16,7 @@ import me.ablax.financemanager.dto.Transaction;
 
 public class TransactionsDb extends SQLiteOpenHelper {
     private static final int VERSION = 1;
-    private static final String DATABASE_NAME = "purchases";
+    private static final String DATABASE_NAME = "payments";
 
     public TransactionsDb(@Nullable final Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -39,7 +39,7 @@ public class TransactionsDb extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO `payments` (`name`, `amount`) VALUES (?, ?)", Arrays.asList(transaction.getName(), transaction.getAmount()).toArray());
     }
 
-    public void deleteTransaction(final int transactionId){
+    public void deleteTransaction(final int transactionId) {
         final SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM `payments` WHERE `id` = ?", Collections.singletonList(transactionId).toArray());
     }
