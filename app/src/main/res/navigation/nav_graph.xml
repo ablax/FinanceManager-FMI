@@ -9,7 +9,7 @@
         android:id="@+id/FirstFragment"
         android:name="me.ablax.financemanager.fragments.LoginFragment"
         android:label="@string/login_page_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/login_fragment">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
@@ -20,6 +20,6 @@
         android:id="@+id/SecondFragment"
         android:name="me.ablax.financemanager.fragments.ManagerFragment"
         android:label="@string/transactions_page_label"
-        tools:layout="@layout/fragment_second">
+        tools:layout="@layout/manager_fragment">
     </fragment>
    </navigation>
