@@ -14,11 +14,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.FragmentSecondBinding;
@@ -78,41 +79,16 @@ public class ManagerFragment extends Fragment {
             final Integer id = transaction.getId();
             row.setId(id);
             row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            final TextView transId = new TextView(getContext());
-            final TextView transName = new TextView(getContext());
-            final TextView amount = new TextView(getContext());
 
-            transId.setId(700000 + id);
-            transName.setId(800000 + id);
-            amount.setId(900000 + id);
-
-
-            transId.setText(id + "");
-            transName.setText(transaction.getName());
             final Double transAmount = transaction.getAmount();
             totalAmount += transAmount;
-            amount.setText(transAmount.toString());
 
-            transId.setPadding(2, 0, 5, 0);
-            transId.setTextColor(Color.BLACK);
-            transName.setPadding(2, 0, 15, 0);
-            transName.setTextColor(Color.BLACK);
-            amount.setPadding(2, 0, 15, 0);
-            amount.setTextColor(Color.BLACK);
-
-            final Button deleteTransaction = new Button(getContext());
-            deleteTransaction.setText(R.string.delete_btn);
-            deleteTransaction.setOnClickListener(v -> {
-                this.db.deleteTransaction(id);
-                refetchTransactions();
-            });
-            deleteTransaction.setPadding(2, 0, 15, 0);
-
-            row.addView(transId);
-            row.addView(transName);
-            row.addView(amount);
-            row.addView(deleteTransaction);
-
+            Arrays.asList(
+                    getTextField(700000 + id, id::toString),
+                    getTextField(800000 + id, transaction::getName),
+                    getTextField(900000 + id, transAmount::toString),
+                    getDeleteButton(id)
+            ).forEach(row::addView);
 
             tableLayout.addView(row);
         }
@@ -142,10 +118,31 @@ public class ManagerFragment extends Fragment {
 
     }
 
+    @NonNull
+    private Button getDeleteButton(final Integer id) {
+        final Button deleteTransaction = new Button(getContext());
+        deleteTransaction.setText(R.string.delete_btn);
+        deleteTransaction.setOnClickListener(v -> {
+            this.db.deleteTransaction(id);
+            refetchTransactions();
+        });
+        deleteTransaction.setPadding(2, 0, 15, 0);
+        return deleteTransaction;
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.binding = null;
+    }
+
+    private TextView getTextField(final int idIndex, final Supplier<String> text) {
+        final TextView view = new TextView(getContext());
+        view.setId(idIndex);
+        view.setText(text.get());
+        view.setPadding(2, 0, 5, 0);
+        view.setTextColor(Color.BLACK);
+        return view;
     }
 
     public static void hideKeyboard(final Activity activity) {
