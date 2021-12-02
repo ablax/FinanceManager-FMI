@@ -21,5 +21,25 @@
         android:name="me.ablax.financemanager.fragments.ManagerFragment"
         android:label="@string/transactions_page_label"
         tools:layout="@layout/manager_fragment">
+
+        <action
+            android:id="@+id/action_SecondFragment_to_ThirdFragment"
+            app:destination="@id/ThirdFragment" >
+            <argument
+                android:name="transactionId"
+                app:argType="integer"
+                android:defaultValue="1" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/ThirdFragment"
+        android:name="me.ablax.financemanager.fragments.PurchasesFragment"
+        android:label="@string/Purchases_page_label"
+        tools:layout="@layout/purchases_fragment">
+
+        <action
+            android:id="@+id/action_ThirdFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
     </fragment>
    </navigation>

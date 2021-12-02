@@ -15,8 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -25,18 +23,15 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import me.ablax.financemanager.R;
-import me.ablax.financemanager.databinding.ManagerFragmentBinding;
+import me.ablax.financemanager.databinding.PurchasesFragmentBinding;
 import me.ablax.financemanager.db.PurchasesDb;
-import me.ablax.financemanager.db.TransactionsDb;
-import me.ablax.financemanager.db.UsersDb;
-import me.ablax.financemanager.dto.Transaction;
+import me.ablax.financemanager.dto.PurchaseDto;
 
-public class ManagerFragment extends Fragment {
+public class PurchasesFragment extends Fragment {
 
-    private ManagerFragmentBinding binding;
-    private TransactionsDb transactionsDb;
+    private PurchasesFragmentBinding binding;
     private PurchasesDb purchasesDb;
-    private UsersDb usersDb;
+    private int transactionId;
 
     public static void hideKeyboard(final Activity activity) {
         final InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -52,11 +47,10 @@ public class ManagerFragment extends Fragment {
                              final Bundle savedInstanceState) {
 
         final Context context = this.getContext();
-        this.transactionsDb = new TransactionsDb(context);
-        this.usersDb = new UsersDb(context);
         this.purchasesDb = new PurchasesDb(context);
+        this.transactionId = getArguments().getInt("transactionId");
 
-        this.binding = ManagerFragmentBinding.inflate(inflater, container, false);
+        this.binding = PurchasesFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -65,61 +59,58 @@ public class ManagerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        this.binding.greetText.setText(binding.greetText.getText().toString().replace("%s", this.usersDb.getUserName()));
-        this.binding.addTransaction.setOnClickListener(v -> {
-            final double amount = Double.parseDouble(binding.price.getText().toString());
-            final String transactionName = binding.transName.getText().toString();
+        this.binding.greetText.setText(binding.greetText.getText().toString().replace("%s", transactionId + ""));
+        this.binding.addProduct.setOnClickListener(v -> {
+            final Integer amount = Integer.parseInt(binding.quantity.getText().toString());
+            final String transactionName = binding.productName.getText().toString();
 
-            transactionsDb.addTransaction(new Transaction(transactionName, amount));
-            Snackbar.make(view, "Successfully added transaction", Snackbar.LENGTH_LONG).setAction("Transaction", null).show();
-            binding.price.setText("");
-            binding.transName.setText("");
+            purchasesDb.addPurchase(new PurchaseDto(transactionId, transactionName, amount));
+            Snackbar.make(view, "Successfully added product", Snackbar.LENGTH_LONG).setAction("Prouct", null).show();
+            binding.quantity.setText("");
+            binding.productName.setText("");
             hideKeyboard(this.requireActivity());
-            refetchTransactions();
+            refetchProducts();
         });
         this.binding.clearAllBtn.setOnClickListener(v -> {
             Snackbar
                     .make(view, "Confirm delete all?", Snackbar.LENGTH_LONG)
                     .setAction("YES", event -> {
-                        transactionsDb.deleteAllTransactions();
-                        refetchTransactions();
-                        Snackbar.make(view, "All transactions successfully deleted!.", Snackbar.LENGTH_SHORT).show();
+                        purchasesDb.deleteAllPurchaseForTransaction(transactionId);
+                        refetchProducts();
+                        Snackbar.make(view, "All products successfully deleted!.", Snackbar.LENGTH_SHORT).show();
                     }).show();
         });
-        refetchTransactions();
+        refetchProducts();
     }
 
-    private void refetchTransactions() {
-        final List<Transaction> transactions = transactionsDb.getTransactions();
+    private void refetchProducts() {
+        final List<PurchaseDto> transactions = purchasesDb.getPurchaseForTransaction(transactionId);
         final TableLayout tableLayout = binding.tableLayout;
         tableLayout.removeAllViews();
-
-        double totalAmount = 0;
-        for (final Transaction transaction : transactions) {
+        int totalAmount = 0;
+        for (final PurchaseDto purchaseDto : transactions) {
             final TableRow row = new TableRow(getContext());
-            final Integer id = transaction.getId();
+
+            final Integer id = purchaseDto.getId();
             row.setId(id);
             row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT));
 
-            final Double transAmount = transaction.getAmount();
+            final Integer transAmount = purchaseDto.getQuantity();
             totalAmount += transAmount;
 
             Arrays.asList(
                     getTextField(700000 + id, id::toString),
-                    getTextField(800000 + id, transaction::getName),
+                    getTextField(800000 + id, purchaseDto::getName),
                     getTextField(900000 + id, transAmount::toString),
-                    getDeleteButton(id),
-                    getTextField(1000000 + id, R.string.total_products_for_transaction),
-                    getTextField(1100000 + id, () -> Integer.valueOf(this.purchasesDb.getPurchaseForTransaction(id).size()).toString()),
-                    getAddProductButton(id)
+                    getDeleteButton(id)
             ).forEach(row::addView);
 
             tableLayout.addView(row);
         }
 
-        final TextView totalTrans = getTextField(600000, R.string.total_spent_amount);
-        final double finalTotalAmount = totalAmount;
-        final TextView totalAmountView = getTextField(500000, () -> Double.valueOf(finalTotalAmount).toString());
+        final TextView totalTrans = getTextField(600000, R.string.total_products_for_transaction);
+        final int finalTotalAmount = totalAmount;
+        final TextView totalAmountView = getTextField(500000, () -> Integer.valueOf(finalTotalAmount).toString());
 
         final TableRow totalAms = new TableRow(getContext());
         totalAms.addView(totalTrans);
@@ -129,23 +120,13 @@ public class ManagerFragment extends Fragment {
 
     }
 
-    private Button getAddProductButton(final Integer id) {
-        final Button deleteTransaction = new Button(getContext());
-        deleteTransaction.setText(R.string.add_products);
-        deleteTransaction.setOnClickListener(v -> {
-            navigateToTransaction(id);
-        });
-        deleteTransaction.setPadding(2, 0, 15, 0);
-        return deleteTransaction;
-    }
-
     @NonNull
     private Button getDeleteButton(final Integer id) {
         final Button deleteTransaction = new Button(getContext());
         deleteTransaction.setText(R.string.delete_btn);
         deleteTransaction.setOnClickListener(v -> {
-            this.transactionsDb.deleteTransaction(id);
-            refetchTransactions();
+            this.purchasesDb.deletePurchase(transactionId, id);
+            refetchProducts();
         });
         deleteTransaction.setPadding(2, 0, 15, 0);
         return deleteTransaction;
@@ -173,13 +154,6 @@ public class ManagerFragment extends Fragment {
         view.setPadding(2, 0, 5, 0);
         view.setTextColor(Color.BLACK);
         return view;
-    }
-
-    private void navigateToTransaction(final int transactionId){
-        Bundle bundle = new Bundle();
-        bundle.putInt("transactionId", transactionId);
-        final NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
-        navController.navigate(R.id.action_SecondFragment_to_ThirdFragment, bundle);
     }
 
 }

@@ -10,12 +10,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import me.ablax.financemanager.R;
-import me.ablax.financemanager.databinding.FragmentFirstBinding;
+import me.ablax.financemanager.databinding.LoginFragmentBinding;
 import me.ablax.financemanager.db.UsersDb;
 
 public class LoginFragment extends Fragment {
 
-    private FragmentFirstBinding binding;
+    private LoginFragmentBinding binding;
     private UsersDb usersDb;
 
     @Override
@@ -25,7 +25,7 @@ public class LoginFragment extends Fragment {
     ) {
         this.usersDb = new UsersDb(this.getContext());
 
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = LoginFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }

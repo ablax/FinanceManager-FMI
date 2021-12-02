@@ -23,12 +23,12 @@ public class PurchasesDb extends SQLiteOpenHelper {
 
     public void addPurchase(final PurchaseDto purchase) {
         final SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("INSERT INTO `payments` (`transactionId`, `name`, `amount`) VALUES (?, ?, ?)", Arrays.asList(purchase.getTransactionId(), purchase.getName(), purchase.getQuantity()).toArray());
+        db.execSQL("INSERT INTO `purchases` (`transactionId`, `name`, `amount`) VALUES (?, ?, ?)", Arrays.asList(purchase.getTransactionId(), purchase.getName(), purchase.getQuantity()).toArray());
     }
 
     public void deletePurchase(final int transactionId, final int purchaseId) {
         final SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM `payments` WHERE `id` = ? AND `transactionId` = ? ", Arrays.asList(purchaseId, transactionId).toArray());
+        db.execSQL("DELETE FROM `purchases` WHERE `id` = ? AND `transactionId` = ? ", Arrays.asList(purchaseId, transactionId).toArray());
     }
 
     public void deleteAllPurchaseForTransaction(final int transactionId) {
@@ -36,10 +36,10 @@ public class PurchasesDb extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM `payments`");
     }
 
-    public List<PurchaseDto> getPurchaseForTransaction(final int transactionId) {
+    public List<PurchaseDto> getPurchaseForTransaction(final Integer transactionId) {
         final List<PurchaseDto> transactionList = new ArrayList<>();
         final SQLiteDatabase db = this.getReadableDatabase();
-        try (Cursor cursor = db.rawQuery("SELECT `transactionId`, `id`, `name`, `amount` FROM `payments` WHERE transactionId = ?", Arrays.asList(transactionId).toArray(new String[0]))) {
+        try (Cursor cursor = db.rawQuery("SELECT `transactionId`, `id`, `name`, `amount` FROM `purchases` WHERE transactionId = ?", Arrays.asList(transactionId.toString()).toArray(new String[0]))) {
             if (cursor.getCount() > 0) {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToNext();
