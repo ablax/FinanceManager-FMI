@@ -39,7 +39,7 @@ public class PurchasesDb extends SQLiteOpenHelper {
     public List<PurchaseDto> getPurchaseForTransaction(final Integer transactionId) {
         final List<PurchaseDto> transactionList = new ArrayList<>();
         final SQLiteDatabase db = this.getReadableDatabase();
-        try (Cursor cursor = db.rawQuery("SELECT `transactionId`, `id`, `name`, `amount` FROM `purchases` WHERE transactionId = ?", Arrays.asList(transactionId.toString()).toArray(new String[0]))) {
+        try (Cursor cursor = db.rawQuery("SELECT `id`, `name`, `amount` FROM `purchases` WHERE transactionId = ?", Arrays.asList(transactionId.toString()).toArray(new String[0]))) {
             if (cursor.getCount() > 0) {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToNext();

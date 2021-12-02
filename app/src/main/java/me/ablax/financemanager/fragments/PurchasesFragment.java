@@ -99,9 +99,8 @@ public class PurchasesFragment extends Fragment {
             totalAmount += transAmount;
 
             Arrays.asList(
-                    getTextField(700000 + id, id::toString),
-                    getTextField(800000 + id, purchaseDto::getName),
                     getTextField(900000 + id, transAmount::toString),
+                    getTextField(800000 + id, purchaseDto::getName),
                     getDeleteButton(id)
             ).forEach(row::addView);
 

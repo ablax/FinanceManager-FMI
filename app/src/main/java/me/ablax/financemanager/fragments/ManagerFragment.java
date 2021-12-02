@@ -105,9 +105,8 @@ public class ManagerFragment extends Fragment {
             totalAmount += transAmount;
 
             Arrays.asList(
-                    getTextField(700000 + id, id::toString),
-                    getTextField(800000 + id, transaction::getName),
                     getTextField(900000 + id, transAmount::toString),
+                    getTextField(800000 + id, transaction::getName),
                     getDeleteButton(id),
                     getTextField(1000000 + id, R.string.total_products_for_transaction),
                     getTextField(1100000 + id, () -> Integer.valueOf(this.purchasesDb.getPurchaseForTransaction(id).size()).toString()),
