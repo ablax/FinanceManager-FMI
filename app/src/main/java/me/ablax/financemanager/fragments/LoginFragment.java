@@ -1,4 +1,4 @@
-package me.ablax.financemanager;
+package me.ablax.financemanager.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,10 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.FragmentFirstBinding;
 import me.ablax.financemanager.db.SQLiteDB;
 
-public class FirstFragment extends Fragment {
+public class LoginFragment extends Fragment {
 
     private FragmentFirstBinding binding;
     private SQLiteDB db;

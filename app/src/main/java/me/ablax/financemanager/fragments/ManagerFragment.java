@@ -1,4 +1,4 @@
-package me.ablax.financemanager;
+package me.ablax.financemanager.fragments;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -20,23 +20,22 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
+import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.FragmentSecondBinding;
 import me.ablax.financemanager.db.SQLiteDB;
 import me.ablax.financemanager.dto.Transaction;
 
-public class SecondFragment extends Fragment {
+public class ManagerFragment extends Fragment {
 
     private FragmentSecondBinding binding;
     private SQLiteDB db;
 
     @Override
-    public View onCreateView(
-            final LayoutInflater inflater, final ViewGroup container,
-            final Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         this.db = new SQLiteDB(this.getContext());
 
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        this.binding = FragmentSecondBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -45,8 +44,8 @@ public class SecondFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        binding.greetText.setText(binding.greetText.getText().toString().replace("%s", db.getUserName()));
-        binding.addTransaction.setOnClickListener(v -> {
+        this.binding.greetText.setText(binding.greetText.getText().toString().replace("%s", db.getUserName()));
+        this.binding.addTransaction.setOnClickListener(v -> {
             final double amount = Double.parseDouble(binding.price.getText().toString());
             final String transactionName = binding.transName.getText().toString();
 
@@ -54,10 +53,10 @@ public class SecondFragment extends Fragment {
             Snackbar.make(view, "Successfully added transaction", Snackbar.LENGTH_LONG).setAction("Transaction", null).show();
             binding.price.setText("");
             binding.transName.setText("");
-            hideKeyboard(getActivity());
+            hideKeyboard(this.requireActivity());
             refetchTransactions();
         });
-        binding.clearAllBtn.setOnClickListener(v -> {
+        this.binding.clearAllBtn.setOnClickListener(v -> {
             Snackbar
                     .make(view, "Confirm delete all?", Snackbar.LENGTH_LONG)
                     .setAction("YES", event -> {
@@ -102,7 +101,7 @@ public class SecondFragment extends Fragment {
             amount.setTextColor(Color.BLACK);
 
             final Button deleteTransaction = new Button(getContext());
-            deleteTransaction.setText("Delete");
+            deleteTransaction.setText(R.string.delete_btn);
             deleteTransaction.setOnClickListener(v -> {
                 this.db.deleteTransaction(id);
                 refetchTransactions();
@@ -127,8 +126,7 @@ public class SecondFragment extends Fragment {
         final int id1 = 500000;
         totalAmountView.setId(id1);
 
-
-        totalTrans.setText("Total spent amount");
+        totalTrans.setText(R.string.total_spent_amount);
         totalAmountView.setText(totalAmount + "");
 
         totalTrans.setPadding(2, 0, 15, 0);
@@ -147,14 +145,12 @@ public class SecondFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        this.binding = null;
     }
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
+    public static void hideKeyboard(final Activity activity) {
+        final InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             view = new View(activity);
         }

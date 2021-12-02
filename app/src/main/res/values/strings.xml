@@ -9,4 +9,6 @@
     <string name="name_input_field">Name</string>
     <string name="sign_in_btn_text">Log in</string>
     <string name="greet">Hello %s</string>
+    <string name="delete_btn">Delete</string>
+    <string name="total_spent_amount">Total spent amount</string>
 </resources>

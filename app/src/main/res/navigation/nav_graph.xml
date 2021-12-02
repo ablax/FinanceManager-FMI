@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="me.ablax.financemanager.FirstFragment"
+        android:name="me.ablax.financemanager.fragments.LoginFragment"
         android:label="@string/login_page_label"
         tools:layout="@layout/fragment_first">
 
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="me.ablax.financemanager.SecondFragment"
+        android:name="me.ablax.financemanager.fragments.ManagerFragment"
         android:label="@string/transactions_page_label"
         tools:layout="@layout/fragment_second">
     </fragment>
