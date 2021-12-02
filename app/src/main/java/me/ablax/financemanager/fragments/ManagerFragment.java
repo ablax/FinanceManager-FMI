@@ -34,6 +34,15 @@ public class ManagerFragment extends Fragment {
     private TransactionsDb transactionsDb;
     private UsersDb usersDb;
 
+    public static void hideKeyboard(final Activity activity) {
+        final InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
@@ -99,26 +108,13 @@ public class ManagerFragment extends Fragment {
             tableLayout.addView(row);
         }
 
+        final TextView totalTrans = getTextField(600000, R.string.total_spent_amount);
+        final double finalTotalAmount = totalAmount;
+        final TextView totalAmountView =  getTextField(500000, () -> Double.valueOf(finalTotalAmount).toString());
+
         final TableRow totalAms = new TableRow(getContext());
-        final TextView totalTrans = new TextView(getContext());
-        final TextView totalAmountView = new TextView(getContext());
-
-        final int id = 600000;
-        totalTrans.setId(id);
-        final int id1 = 500000;
-        totalAmountView.setId(id1);
-
-        totalTrans.setText(R.string.total_spent_amount);
-        totalAmountView.setText(Double.valueOf(totalAmount).toString());
-
-        totalTrans.setPadding(2, 0, 15, 0);
-        totalTrans.setTextColor(Color.BLACK);
-        totalAmountView.setPadding(2, 0, 15, 0);
-        totalAmountView.setTextColor(Color.BLACK);
-
         totalAms.addView(totalTrans);
         totalAms.addView(totalAmountView);
-
 
         tableLayout.addView(totalAms);
 
@@ -151,13 +147,13 @@ public class ManagerFragment extends Fragment {
         return view;
     }
 
-    public static void hideKeyboard(final Activity activity) {
-        final InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = activity.getCurrentFocus();
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    private TextView getTextField(final int idIndex, final int id) {
+        final TextView view = new TextView(getContext());
+        view.setId(idIndex);
+        view.setText(id);
+        view.setPadding(2, 0, 5, 0);
+        view.setTextColor(Color.BLACK);
+        return view;
     }
 
 }
