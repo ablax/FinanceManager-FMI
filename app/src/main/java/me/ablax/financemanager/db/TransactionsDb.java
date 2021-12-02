@@ -14,11 +14,11 @@ import java.util.List;
 
 import me.ablax.financemanager.dto.Transaction;
 
-public class SQLiteDB extends SQLiteOpenHelper {
+public class TransactionsDb extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String DATABASE_NAME = "purchases";
 
-    public SQLiteDB(@Nullable final Context context) {
+    public TransactionsDb(@Nullable final Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }
 

@@ -24,14 +24,14 @@ import java.util.function.Supplier;
 
 import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.FragmentSecondBinding;
-import me.ablax.financemanager.db.SQLiteDB;
+import me.ablax.financemanager.db.TransactionsDb;
 import me.ablax.financemanager.db.UsersDb;
 import me.ablax.financemanager.dto.Transaction;
 
 public class ManagerFragment extends Fragment {
 
     private FragmentSecondBinding binding;
-    private SQLiteDB transactionsDb;
+    private TransactionsDb transactionsDb;
     private UsersDb usersDb;
 
     @Override
@@ -39,7 +39,7 @@ public class ManagerFragment extends Fragment {
                              final Bundle savedInstanceState) {
 
         final Context context = this.getContext();
-        this.transactionsDb = new SQLiteDB(context);
+        this.transactionsDb = new TransactionsDb(context);
         this.usersDb = new UsersDb(context);
 
         this.binding = FragmentSecondBinding.inflate(inflater, container, false);

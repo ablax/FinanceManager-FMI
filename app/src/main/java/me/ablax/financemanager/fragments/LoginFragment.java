@@ -11,7 +11,6 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import me.ablax.financemanager.R;
 import me.ablax.financemanager.databinding.FragmentFirstBinding;
-import me.ablax.financemanager.db.SQLiteDB;
 import me.ablax.financemanager.db.UsersDb;
 
 public class LoginFragment extends Fragment {
