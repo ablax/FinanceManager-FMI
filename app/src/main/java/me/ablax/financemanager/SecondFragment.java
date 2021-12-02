@@ -52,6 +52,8 @@ public class SecondFragment extends Fragment {
 
             db.addTransaction(new Transaction(transactionName, amount));
             Snackbar.make(view, "Successfully added transaction", Snackbar.LENGTH_LONG).setAction("Transaction", null).show();
+            binding.price.setText("");
+            binding.transName.setText("");
             hideKeyboard(getActivity());
             refetchTransactions();
         });
