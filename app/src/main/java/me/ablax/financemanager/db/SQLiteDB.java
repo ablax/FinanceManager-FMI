@@ -44,7 +44,6 @@ public class SQLiteDB extends SQLiteOpenHelper {
 
     public boolean hasUser() {
         final SQLiteDatabase db = this.getReadableDatabase();
-        createDb(db);
         try (Cursor cursor = db.rawQuery("SELECT * FROM `users`", new String[0])) {
             return cursor.getCount() > 0;
         }
@@ -61,6 +60,16 @@ public class SQLiteDB extends SQLiteOpenHelper {
     public void addTransaction(final Transaction transaction) {
         final SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("INSERT INTO `payments` (`name`, `amount`) VALUES (?, ?)", Arrays.asList(transaction.getName(), transaction.getAmount()).toArray());
+    }
+
+    public void deleteTransaction(final int transactionId){
+        final SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM `payments` WHERE `id` = ?", Collections.singletonList(transactionId).toArray());
+    }
+
+    public void deleteAllTransactions() {
+        final SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM `payments`");
     }
 
     public List<Transaction> getTransactions() {
@@ -85,4 +94,5 @@ public class SQLiteDB extends SQLiteOpenHelper {
         db.compileStatement("CREATE TABLE IF NOT EXISTS `payments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(20), `amount` REAL )").execute();
         db.compileStatement("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(20))").execute();
     }
+
 }

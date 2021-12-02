@@ -1,10 +1,13 @@
 package me.ablax.financemanager;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -12,6 +15,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -36,7 +41,7 @@ public class SecondFragment extends Fragment {
 
     }
 
-    public void onViewCreated(@NonNull final  View view, final  Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
 
@@ -46,7 +51,18 @@ public class SecondFragment extends Fragment {
             final String transactionName = binding.transName.getText().toString();
 
             db.addTransaction(new Transaction(transactionName, amount));
+            Snackbar.make(view, "Successfully added transaction", Snackbar.LENGTH_LONG).setAction("Transaction", null).show();
+            hideKeyboard(getActivity());
             refetchTransactions();
+        });
+        binding.clearAllBtn.setOnClickListener(v -> {
+            Snackbar
+                    .make(view, "Confirm delete all?", Snackbar.LENGTH_LONG)
+                    .setAction("YES", event -> {
+                        db.deleteAllTransactions();
+                        refetchTransactions();
+                        Snackbar.make(view, "All transactions successfully deleted!.", Snackbar.LENGTH_SHORT).show();
+                    }).show();
         });
         refetchTransactions();
     }
@@ -60,32 +76,41 @@ public class SecondFragment extends Fragment {
             final TableRow row = new TableRow(getContext());
             final Integer id = transaction.getId();
             row.setId(id);
-            row .setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+            row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
             final TextView transId = new TextView(getContext());
             final TextView transName = new TextView(getContext());
             final TextView amount = new TextView(getContext());
 
-            transId.setId(700000+id);
-            transName.setId(800000+id);
-            amount.setId(900000+id);
+            transId.setId(700000 + id);
+            transName.setId(800000 + id);
+            amount.setId(900000 + id);
 
 
-            transId.setText(id+"");
+            transId.setText(id + "");
             transName.setText(transaction.getName());
             final Double transAmount = transaction.getAmount();
             totalAmount += transAmount;
             amount.setText(transAmount.toString());
 
-            transId.setPadding(2, 0, 15, 0);
+            transId.setPadding(2, 0, 5, 0);
             transId.setTextColor(Color.BLACK);
             transName.setPadding(2, 0, 15, 0);
             transName.setTextColor(Color.BLACK);
             amount.setPadding(2, 0, 15, 0);
             amount.setTextColor(Color.BLACK);
 
+            final Button deleteTransaction = new Button(getContext());
+            deleteTransaction.setText("Delete");
+            deleteTransaction.setOnClickListener(v -> {
+                this.db.deleteTransaction(id);
+                refetchTransactions();
+            });
+            deleteTransaction.setPadding(2, 0, 15, 0);
+
             row.addView(transId);
             row.addView(transName);
             row.addView(amount);
+            row.addView(deleteTransaction);
 
 
             tableLayout.addView(row);
@@ -102,7 +127,7 @@ public class SecondFragment extends Fragment {
 
 
         totalTrans.setText("Total spent amount");
-        totalAmountView.setText(totalAmount+"");
+        totalAmountView.setText(totalAmount + "");
 
         totalTrans.setPadding(2, 0, 15, 0);
         totalTrans.setTextColor(Color.BLACK);
@@ -121,6 +146,17 @@ public class SecondFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 }
